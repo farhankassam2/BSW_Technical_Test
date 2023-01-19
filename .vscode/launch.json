@@ -1,0 +1,19 @@
+{
+    "configurations": [
+        {
+            "name": "Run Android",
+            "request": "launch",
+            "type": "reactnative",
+            "cwd": "${workspaceFolder}",
+            "enableDebug": false,
+            "platform": "android"
+        },
+        {
+            "name": "Debug Android",
+            "request": "launch",
+            "type": "reactnative",
+            "cwd": "${workspaceFolder}",
+            "platform": "android"
+        }
+    ]
+}
