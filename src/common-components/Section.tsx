@@ -35,16 +35,15 @@ type SectionProps = PropsWithChildren<{
 
   const styles = StyleSheet.create({
     sectionContainer: {
-      paddingHorizontal: 24,
+      paddingLeft: 24,
       backgroundColor: 'blue'
     },
     sectionTitle: {
-        paddintTop: 24,
+        marginTop: 24,
       fontSize: 24,
       fontWeight: '600',
     },
     sectionDescription: {
-      marginTop: 8,
       fontSize: 18,
       fontWeight: '400',
     },

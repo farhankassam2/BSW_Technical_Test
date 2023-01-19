@@ -1,5 +1,5 @@
 import React, {Component, ComponentPropsWithoutRef, PropsWithChildren} from 'react';
-import {ScrollView, StyleSheet, Text, View} from 'react-native';
+import {Button, GestureResponderEvent, ScrollView, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import { Colors } from 'react-native/Libraries/NewAppScreen';
 import { Section } from '../common-components/Section';
 import {
@@ -10,36 +10,54 @@ type Props = {
     backgroundStyle: typeof Colors;
     people: Person[];
 }
-export default class PeopleListView extends Component<Props> {
+type State = {
+    isViewingDetail: boolean;
+}
+
+export default class PeopleListView extends Component<Props, State> {
     constructor(props: Props) {
         super(props);
+        this.state = {
+            isViewingDetail: false,
+        }
+    }
+
+    onCardClick = (person: Person): void => {
+        this.setState({ isViewingDetail: true });
     }
 
     render() {
-        return (
-        <ScrollView
-            contentInsetAdjustmentBehavior="automatic"
-            style={this.props.backgroundStyle}>
-                {this.props.people.map(person => {
-                    return <PersonCard person={person} key={person.id} />
-                })
-                }
-        </ScrollView>
-        )
+        if (!this.state.isViewingDetail) {
+            return (
+                <ScrollView
+                    showsVerticalScrollIndicator={true}
+                    contentInsetAdjustmentBehavior="automatic"
+                    style={this.props.backgroundStyle}>
+                        {this.props.people.map(person => {
+                            return <PersonCard person={person} key={person.id} onCardClick={this.onCardClick} />
+                        })
+                        }
+                </ScrollView>
+                )
+        } else {
+            return (<View></View>);
+        }
     }
 };
 
 type PersonProps = {
     person: Person;
+    onCardClick: (person: Person) => any;
 };
-export function PersonCard({person}: PersonProps): JSX.Element {
+export function PersonCard({person, onCardClick}: PersonProps): JSX.Element {
     return (
-        <View style={personCardStyles.cardContainer}>
-            <Text style={personCardStyles.cardName}>{person.fullName}</Text>
-            <Text style={personCardStyles.cardEmail}>{person.email}</Text>
-        </View>
+            <TouchableOpacity style={personCardStyles.cardContainer} onPress={(event) => onCardClick(person)}>
+                     <Text style={personCardStyles.cardName}>{person.fullName}</Text>
+                    <Text style={personCardStyles.cardEmail}>{person.email}</Text>
+            </TouchableOpacity>
     )
 }
+
 
 const personCardStyles = StyleSheet.create({
     cardContainer: {
