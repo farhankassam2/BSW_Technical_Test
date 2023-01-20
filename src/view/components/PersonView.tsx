@@ -1,7 +1,7 @@
 import { Component } from "react";
 import {Button, GestureResponderEvent, ScrollView, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import { Colors } from "react-native/Libraries/NewAppScreen";
-import { Person } from "../types/Person";
+import { Person } from "../../model/Person";
 import { Section } from "./common-components/Section";
 type Props = {
     person: Person;

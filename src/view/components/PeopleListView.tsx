@@ -1,11 +1,17 @@
-import React, {Component, ComponentPropsWithoutRef, PropsWithChildren} from 'react';
+import {Component, ComponentPropsWithoutRef, PropsWithChildren} from 'react';
 import {Button, GestureResponderEvent, ScrollView, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import { Colors } from 'react-native/Libraries/NewAppScreen';
 import { Section } from './common-components/Section';
 import {
   } from 'react-native/Libraries/NewAppScreen';
-import { Person } from '../types/Person';
+import { Person } from '../../model/Person';
 import PersonView from './PersonView';
+
+import React, { useState } from 'react'
+import store, { useAppSelector, useAppDispatch } from '../../store';
+import { handleFetchPeople } from '../../controller/actions/peopleAction';
+import { ApplicationState } from '../../controller/rootReducer';
+import { connect } from 'react-redux';
 
 type Props = {
     backgroundStyle: typeof Colors;
@@ -16,7 +22,7 @@ type State = {
     personDetail?: Person;
 }
 
-export default class PeopleListView extends Component<Props, State> {
+class PeopleListView extends Component<Props, State> {
     constructor(props: Props) {
         super(props);
         this.state = {
@@ -32,7 +38,16 @@ export default class PeopleListView extends Component<Props, State> {
         this.setState({ isViewingDetail: false, personDetail: undefined });
     }
 
+    fetchPeople = async (): Promise<void> => {
+        const dispatch = useAppDispatch();
+        dispatch(handleFetchPeople);
+    }
+
     render() {
+        const people = useAppSelector((state) => state.people.people);
+        if (people.length == 0) {
+            this.fetchPeople();
+        }
         if (!this.state.isViewingDetail) {
             return (
                 <>
@@ -49,6 +64,7 @@ export default class PeopleListView extends Component<Props, State> {
                 )
         } else if (this.state.personDetail) {
             return (
+                // TODO: modify such that it dispatches action to fetch person detail, in case it has been updated in the database by someone else.
                 <PersonView backgroundStyle={this.props.backgroundStyle} person={this.state.personDetail} onGoBack={this.onGoBack} ></PersonView>
             );
         } else {
@@ -91,4 +107,16 @@ const personCardStyles = StyleSheet.create({
       color: 'grey'
     },
   });
+
+  // Map redux state to props
+  const mapStateToProps = (state: ApplicationState) => ({
+    people: state.peopleState.people,
+  });
+
+  // Map action dispatchers to props
+//   const mapDispatchToProps = {
+//     handleFetchPeople,
+//   }
+
+  export default connect(mapStateToProps, null)(PeopleListView);
 

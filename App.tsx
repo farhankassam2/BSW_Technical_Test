@@ -24,9 +24,9 @@ import {
   LearnMoreLinks,
   ReloadInstructions,
 } from 'react-native/Libraries/NewAppScreen';
-import { Section } from './src/components/common-components/Section';
-import PeopleListView from './src/components/PeopleListView';
-import { examplePeople } from './src/dummyData/PeopleList';
+import { Section } from './src/view/components/common-components/Section';
+import PeopleListView from './src/view/components/PeopleListView';
+import { examplePeople } from './src/model/dummyData/PeopleList';
 
 function App(): JSX.Element {
   const isDarkMode = useColorScheme() === 'dark';
@@ -41,7 +41,7 @@ function App(): JSX.Element {
         barStyle={isDarkMode ? 'light-content' : 'dark-content'}
         backgroundColor={backgroundStyle.backgroundColor}
       />
-      <PeopleListView backgroundStyle={backgroundStyle} people={examplePeople}/>
+      <PeopleListView backgroundStyle={backgroundStyle}/>
     </SafeAreaView>
   );
 }
