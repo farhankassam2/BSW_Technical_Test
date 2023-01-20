@@ -12,10 +12,13 @@ import store, { useAppSelector, useAppDispatch } from '../../store';
 import { handleFetchPeople } from '../../controller/actions/peopleAction';
 import { ApplicationState } from '../../controller/rootReducer';
 import { connect } from 'react-redux';
+import { ApiError } from '../../util/errorHandler';
 
 type Props = {
     backgroundStyle: typeof Colors;
     people: Person[];
+    isFetching: boolean;
+    fetchingFailed?: ApiError;
 }
 type State = {
     isViewingDetail: boolean;
@@ -30,6 +33,15 @@ class PeopleListView extends Component<Props, State> {
         }
     }
 
+    componentDidMount() {
+        this.fetchPeople();
+    }
+    
+    fetchPeople = async (): Promise<void> => {
+        const dispatch = useAppDispatch();
+        dispatch(handleFetchPeople);
+    }
+
     onCardClick = (person: Person): void => {
         this.setState({ isViewingDetail: true, personDetail: person });
     }
@@ -38,17 +50,16 @@ class PeopleListView extends Component<Props, State> {
         this.setState({ isViewingDetail: false, personDetail: undefined });
     }
 
-    fetchPeople = async (): Promise<void> => {
-        const dispatch = useAppDispatch();
-        dispatch(handleFetchPeople);
-    }
-
     render() {
-        const people = useAppSelector((state) => state.people.people);
-        if (people.length == 0) {
-            this.fetchPeople();
-        }
-        if (!this.state.isViewingDetail) {
+        if (this.props.isFetching) {
+            // Loading indicator
+            return (
+                <View style={peopleListStyles.loadingContainer}>
+                    <Text style={peopleListStyles.welcome}>Loading...........</Text>
+                </View>
+                )
+        } else if (!this.state.isViewingDetail) {
+            // If user is not viewing a person's details
             return (
                 <>
                     <Section title="My Application"/>
@@ -86,6 +97,21 @@ export function PersonCard({person, onCardClick}: PersonProps): JSX.Element {
     )
 }
 
+const peopleListStyles = StyleSheet.create({
+    loadingContainer: {
+        flex: 1,
+        alignItems: 'center',
+        backgroundColor: '#F5FCFF',
+        justifyContent: 'center',
+      },
+      welcome: {
+        fontSize: 20,
+        textAlign: 'center',
+        margin: 50,
+        width: 100%,
+      },
+})
+
 
 const personCardStyles = StyleSheet.create({
     cardContainer: {
@@ -111,6 +137,8 @@ const personCardStyles = StyleSheet.create({
   // Map redux state to props
   const mapStateToProps = (state: ApplicationState) => ({
     people: state.peopleState.people,
+    isFetching: state.peopleState.gettingPeople,
+    fetchingFailed: state.peopleState.gettingPeopleError,
   });
 
   // Map action dispatchers to props

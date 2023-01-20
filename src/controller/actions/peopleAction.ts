@@ -37,6 +37,12 @@ const parseServerPeopleToPeople = (serverPeople: ServerPerson[]): Person[] => {
     return people;
 }
 
+// Try this method if below handleFetchPeople does not work: const thunkFunction = (dispatch, getState) => {
+  // logic here that can dispatch actions or read state
+//}
+//
+//store.dispatch(thunkFunction)
+
 export function handleFetchPeople() {
     return async (dispatch: any, getState: ApplicationState) => {
         dispatch(fetchingPeople());
