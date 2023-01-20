@@ -2,7 +2,7 @@ import { AsyncThunk, createAsyncThunk, ThunkAction } from "@reduxjs/toolkit";
 import { BaseThunkAPI } from "@reduxjs/toolkit/dist/createAsyncThunk";
 import { ApiError } from "../../util/errorHandler";
 import { Person, ServerPerson } from "../../model/Person";
-import store, { useAppDispatch, useAppSelector } from "../../store";
+import store, { RootState, useAppDispatch, useAppSelector } from "../../store";
 import peopleSlice, { fetchedPeopleFail, fetchedPeopleSuccess, fetchingPeople } from "../reducers/peopleSlice";
 import { ApplicationState } from "../rootReducer";
 
@@ -37,23 +37,17 @@ const parseServerPeopleToPeople = (serverPeople: ServerPerson[]): Person[] => {
     return people;
 }
 
-// Try this method if below handleFetchPeople does not work: const thunkFunction = (dispatch, getState) => {
-  // logic here that can dispatch actions or read state
-//}
-//
-//store.dispatch(thunkFunction)
-
-export function handleFetchPeople() {
-    return async (dispatch: any, getState: ApplicationState) => {
+export const handleFetchPeople = async (dispatch: any, getState: RootState) => {
         dispatch(fetchingPeople());
         const response = await fetch(`https://jsonplaceholder.typicode.com/users`, {
             method: 'GET',
-            // headers: {
-            //     'Authorization': 'noAuth'
-            // },
+            headers: {
+                'Content-Type': 'application/json',
+                Accept: 'application/json',
+            },
         });
         if (response.status != 200) {
-            return dispatch(fetchedPeopleFail({ message: 'Failed to load user data. Please try again.'}));
+            return dispatch(fetchedPeopleFail({ message: 'Failed to load user data. Please try again.'} as ApiError));
         } else {
             const serverPeople: ServerPerson[] = await response.json() as ServerPerson[];
 
@@ -61,7 +55,6 @@ export function handleFetchPeople() {
             const people: Person[] = parseServerPeopleToPeople(serverPeople) as Person[];
             return dispatch(fetchedPeopleSuccess(people));
         }
-    }
 }
 
 // const handleFetchPeople = createAsyncThunk<

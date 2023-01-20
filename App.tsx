@@ -6,7 +6,6 @@
  */
 
 import React from 'react';
-import type {PropsWithChildren} from 'react';
 import {
   SafeAreaView,
   ScrollView,
@@ -27,6 +26,8 @@ import {
 import { Section } from './src/view/components/common-components/Section';
 import PeopleListView from './src/view/components/PeopleListView';
 import { examplePeople } from './src/model/dummyData/PeopleList';
+import { Provider } from 'react-redux';
+import store from './src/store';
 
 function App(): JSX.Element {
   const isDarkMode = useColorScheme() === 'dark';
@@ -36,13 +37,15 @@ function App(): JSX.Element {
   };
 
   return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor={backgroundStyle.backgroundColor}
-      />
-      <PeopleListView backgroundStyle={backgroundStyle}/>
-    </SafeAreaView>
+    <Provider store={store}>
+      <SafeAreaView style={backgroundStyle}>
+        <StatusBar
+          barStyle={isDarkMode ? 'light-content' : 'dark-content'}
+          backgroundColor={backgroundStyle.backgroundColor}
+        />
+        <PeopleListView backgroundStyle={backgroundStyle}/>
+      </SafeAreaView>
+    </Provider>
   );
 }
 

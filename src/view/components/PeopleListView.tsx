@@ -1,5 +1,6 @@
 import {Component, ComponentPropsWithoutRef, PropsWithChildren} from 'react';
-import {Button, GestureResponderEvent, ScrollView, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {Alert, Button, GestureResponderEvent, Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import Toast from 'react-native-simple-toast';
 import { Colors } from 'react-native/Libraries/NewAppScreen';
 import { Section } from './common-components/Section';
 import {
@@ -8,9 +9,8 @@ import { Person } from '../../model/Person';
 import PersonView from './PersonView';
 
 import React, { useState } from 'react'
-import store, { useAppSelector, useAppDispatch } from '../../store';
+import store, { useAppSelector, useAppDispatch, RootState } from '../../store';
 import { handleFetchPeople } from '../../controller/actions/peopleAction';
-import { ApplicationState } from '../../controller/rootReducer';
 import { connect } from 'react-redux';
 import { ApiError } from '../../util/errorHandler';
 
@@ -33,13 +33,22 @@ class PeopleListView extends Component<Props, State> {
         }
     }
 
-    componentDidMount() {
+    componentDidMount(): void {
         this.fetchPeople();
     }
-    
-    fetchPeople = async (): Promise<void> => {
-        const dispatch = useAppDispatch();
-        dispatch(handleFetchPeople);
+
+    componentDidUpdate(prevProps: Readonly<Props>, prevState: Readonly<State>, snapshot?: any): void {
+        if (!this.props.fetchingFailed) {
+            // Toast.showWithGravity('User list loaded successfully.', 4, 4, peopleListStyles.toastMessages);
+            Alert.alert('User list loaded successfully.');
+        }
+        if(this.props.fetchingFailed && this.props.fetchingFailed.message) {
+            this.notifyUserError(this.props.fetchingFailed);
+        } 
+    }
+
+    private async fetchPeople(): Promise<void> {
+        store.dispatch(handleFetchPeople);
     }
 
     onCardClick = (person: Person): void => {
@@ -49,6 +58,10 @@ class PeopleListView extends Component<Props, State> {
     onGoBack = (): void => {
         this.setState({ isViewingDetail: false, personDetail: undefined });
     }
+
+    notifyUserError(error: ApiError) {
+        Alert.alert(error.message);
+      }
 
     render() {
         if (this.props.isFetching) {
@@ -108,8 +121,15 @@ const peopleListStyles = StyleSheet.create({
         fontSize: 20,
         textAlign: 'center',
         margin: 50,
-        width: 100%,
+        width: '100%',
       },
+      toastMessages: {
+        width: '100%',
+        fontSize: 23,
+        textAlign: 'center',
+        alignItems: 'center',
+        marginTop: '90%',
+      }
 })
 
 
@@ -135,13 +155,13 @@ const personCardStyles = StyleSheet.create({
   });
 
   // Map redux state to props
-  const mapStateToProps = (state: ApplicationState) => ({
-    people: state.peopleState.people,
-    isFetching: state.peopleState.gettingPeople,
-    fetchingFailed: state.peopleState.gettingPeopleError,
+  const mapStateToProps = (state: RootState) => ({
+    people: state.people.people,
+    isFetching: state.people.gettingPeople,
+    fetchingFailed: state.people.gettingPeopleError,
   });
 
-  // Map action dispatchers to props
+  // Map action dispatchers to props: I prefer not using this as store.dispatch is clearer to me when reading...
 //   const mapDispatchToProps = {
 //     handleFetchPeople,
 //   }

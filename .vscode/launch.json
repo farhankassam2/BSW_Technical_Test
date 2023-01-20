@@ -1,19 +1,26 @@
 {
     "configurations": [
         {
-            "name": "Run Android",
+            "name": "Android attach",
+            "request": "attach",
+            "type": "reactnative",
+            "cwd": "${workspaceFolder}",
+            "port": 50026,
+        },
+        {
+            "name": "Android launch",
             "request": "launch",
             "type": "reactnative",
             "cwd": "${workspaceFolder}",
-            "enableDebug": false,
-            "platform": "android"
+            "enableDebug": true,
+            "platform": "android",
         },
         {
             "name": "Debug Android",
             "request": "launch",
             "type": "reactnative",
             "cwd": "${workspaceFolder}",
-            "platform": "android"
+            "platform": "android",
         }
     ]
 }
