@@ -17,6 +17,9 @@ const parseServerPeopleToPeople = (serverPeople: ServerPerson[]): Person[] => {
     return people;
 }
 
+// Purpose: to fetch data of all the users from the API call, using the 'users' route in the URL.
+//          to dispatch fetching people during API call load, and people list to the peopleSlice of the reducer to process and deliver to the PersonListView component.
+//           to handle any non-200 status errors with a generic user message delivered to the PersonListView component as well.
 export const handleFetchPeople = async (dispatch: any, getState: RootState) => {
         dispatch(fetchingPeople());
         const response = await fetch(`https://jsonplaceholder.typicode.com/users`, {
@@ -36,7 +39,8 @@ export const handleFetchPeople = async (dispatch: any, getState: RootState) => {
         return dispatch(fetchedPeopleSuccess(people));
 }
 
-// const handleFetchPeople = createAsyncThunk<
+//  Below code does not work that was tried initially, therefore left commented out.
+//const handleFetchPeople = createAsyncThunk<
 //     ServerPerson[],
 //     null,
 //     {

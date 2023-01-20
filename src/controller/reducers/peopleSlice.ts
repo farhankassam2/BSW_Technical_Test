@@ -13,7 +13,7 @@ const initialState: PeopleState = {
     gettingPeopleError: undefined,
 }
 
-// Redux reducer for PeopleListView component -- with added dispatch example actions for future use.
+// Purpose: Redux reducer for PeopleListView component -- with added dispatch example actions for future use.
 export const peopleSlice = createSlice({
     name: 'peopleReducer',
     initialState,

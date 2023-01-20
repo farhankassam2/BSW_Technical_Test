@@ -10,6 +10,8 @@ const initialState: PersonState = {
     gettingPersonError: undefined,
 }
 
+// Purpose: Redux person detail slice of the overall root-level reducer, 
+//          to process data during loading of the data, as well as separate success and error types accordingly.
 export const personSlice = createSlice({
     name: 'personReducer',
     initialState,

@@ -20,6 +20,9 @@ export type PeopleState = {
 //     payload: Person[] | ApiError,
 // }
 
+
+
+
 //PERSON STATE TYPES
 
 // export enum PersonActionType {
