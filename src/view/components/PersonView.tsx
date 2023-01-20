@@ -1,8 +1,9 @@
 import { Component } from "react";
-import {Button, GestureResponderEvent, ScrollView, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {Alert, Button, GestureResponderEvent, Linking, Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import { Colors } from "react-native/Libraries/NewAppScreen";
 import { connect, useDispatch } from "react-redux";
 import { handleFetchPerson } from "../../controller/actions/personAction";
+import { Address } from "../../model/Address";
 import { Person } from "../../model/Person";
 import store, { RootState } from "../../store";
 import { ApiError } from "../../util/errorHandler";
@@ -41,8 +42,47 @@ class PersonView extends Component<Props, State> {
         } 
     }
 
+    //Purpose: opens maps to the exact GeoLocation address specified for the person.
+    openMaps(address: Address): void {
+        const scheme = Platform.select({ ios: 'maps:0,0?q=', android: 'geo:0,0?q=' });
+        const latLng = `${address.geoLocation.lat},${address.geoLocation.lon}`;
+        const label = `${address.street} ${address.suite} ${address.zipCode}`;
+        const url = Platform.select({
+            ios: `${scheme}${label}@${latLng}`,
+            android: `${scheme}${latLng}(${label})`
+        });
+        if (url) {
+            Linking.openURL(url);
+        }
+    }
+
+    callPhone(phone: string): void {
+        let indexOfX = phone.indexOf('x'); // to remove extensions
+        let phoneNumber = '';
+        if (indexOfX != -1) {
+            phoneNumber = phone.substring(0, indexOfX);
+        } else {
+            phoneNumber = phone; // some phone numbers I noticed did not have extensions, in which case leave as is since phone app handles hyphens.
+        }
+        if (Platform.OS !== 'android') {
+            phoneNumber = `telprompt:${phone}`;
+        } else  {
+            phoneNumber = `tel:${phone}`;
+        }
+        Linking.canOpenURL(phoneNumber)
+            .then(supported => {
+                if (!supported) {
+                    Alert.alert('Phone number is invalid. Please try again.');
+                } else {
+                    return Linking.openURL(phoneNumber);
+                }
+            })
+            .catch(err => console.log(err));
+    }
+
     render(){
-        let { emailText, detailContainer,fullNameText, companyNameText,contactAndOtherContainer, contactAndOther,userNameAddressAndWebsite } = {...personViewStyles};
+        let { emailText, detailContainer,fullNameText, companyNameText,contactAndOtherContainer, 
+            contactAndOther,userNameAddressAndWebsite, phoneContainer, addressContainer } = personViewStyles;
 
         if (this.props.fetchingPerson) {
             return (
@@ -67,10 +107,14 @@ class PersonView extends Component<Props, State> {
                             <View style={contactAndOtherContainer}>
                                 <Text style={contactAndOther}>Contact Information</Text>
                                 <Text style={emailText}>{email}</Text>
-                                <Text style={userNameAddressAndWebsite}>{address.street}</Text>
-                                <Text style={userNameAddressAndWebsite}> {address.suite}</Text>
-                                <Text style={userNameAddressAndWebsite}>{address.city} {address.zipCode}</Text>
-                                <Text style={userNameAddressAndWebsite}>{phone}</Text>
+                                <TouchableOpacity style={addressContainer} onPress={() => this.openMaps(address)}>
+                                    <Text style={userNameAddressAndWebsite}>{address.street}</Text>
+                                    <Text style={userNameAddressAndWebsite}> {address.suite}</Text>
+                                    <Text style={userNameAddressAndWebsite}>{address.city} {address.zipCode}</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity style={phoneContainer} onPress={() => this.callPhone(phone)}>
+                                    <Text style={userNameAddressAndWebsite}>{phone}</Text>
+                                </TouchableOpacity>
                             </View>
                             <View style={contactAndOtherContainer}>
                                 <Text style={contactAndOther}>Other Information</Text>
@@ -90,6 +134,12 @@ class PersonView extends Component<Props, State> {
 }
 
 const personViewStyles = StyleSheet.create({
+    phoneContainer: {
+        backgroundColor: '#f5e1e1'
+    },
+    addressContainer: {
+        backgroundColor: '#ADD8E6'
+    },
     detailContainer: {
         marginTop: 10,
     },
