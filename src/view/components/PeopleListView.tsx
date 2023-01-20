@@ -68,7 +68,8 @@ class PeopleListView extends Component<Props, State> {
                     <ScrollView
                     showsVerticalScrollIndicator={true}
                     contentInsetAdjustmentBehavior="automatic"
-                    style={this.props.backgroundStyle}>
+                    style={this.props.backgroundStyle}
+                    contentContainerStyle={peopleListStyles.scrollContainer}>
                         {this.props.people.map(person => {
                             return <PersonCard person={person} key={person.id} onCardClick={this.onCardClick} />;
                         })}
@@ -98,15 +99,11 @@ export function PersonCard({person, onCardClick}: PersonProps): JSX.Element {
     )
 }
 
-// const peopleListStyles = StyleSheet.create({
-//       toastMessages: {
-//         width: '100%',
-//         fontSize: 23,
-//         textAlign: 'center',
-//         alignItems: 'center',
-//         marginTop: '90%',
-//       }
-// })
+const peopleListStyles = StyleSheet.create({
+      scrollContainer: {
+        paddingBottom: 100,
+      }
+});
 
 
 // TODO: switch to using 'em' values for margin, padding and sizing below so that it can accommodate varying screen sizes.
