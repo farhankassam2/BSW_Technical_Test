@@ -22,12 +22,14 @@ export const peopleSlice = createSlice({
             return {
                 ...state,
                 gettingPeople: true,
+                gettingPeopleError: undefined,
             }
         },
         fetchedPeopleSuccess: (state, action: PayloadAction<Person[]>) => {
             return {
                 ...state,
                 gettingPeople: false,
+                gettingPeopleError: undefined,
                 people: action.payload,
             }
         },

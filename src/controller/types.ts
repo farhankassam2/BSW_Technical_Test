@@ -28,7 +28,7 @@ export type PeopleState = {
 //     GET_PERSON_FAIL = 'GET_PERSON_FAIL',
 // }
 export type PersonState = {
-    person: Person;
+    person?: Person;
     
     gettingPerson: boolean;
     gettingPersonError?: ApiError;
