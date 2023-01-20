@@ -56,18 +56,19 @@ class PersonView extends Component<Props, State> {
         }
     }
 
+    // Purpose: opens phone app with the phone number withouy extension pre-populated for calling the person on screen.
     callPhone(phone: string): void {
         let indexOfX = phone.indexOf('x'); // to remove extensions
         let phoneNumber = '';
         if (indexOfX != -1) {
-            phoneNumber = phone.substring(0, indexOfX);
+            phoneNumber = phone.substring(0, indexOfX - 1);
         } else {
             phoneNumber = phone; // some phone numbers I noticed did not have extensions, in which case leave as is since phone app handles hyphens.
         }
         if (Platform.OS !== 'android') {
-            phoneNumber = `telprompt:${phone}`;
+            phoneNumber = `telprompt:${phoneNumber}`;
         } else  {
-            phoneNumber = `tel:${phone}`;
+            phoneNumber = `tel:${phoneNumber}`;
         }
         Linking.canOpenURL(phoneNumber)
             .then(supported => {
