@@ -81,9 +81,22 @@ class PersonView extends Component<Props, State> {
             .catch(err => console.log(err));
     }
 
+    // Purpose: open website URL on browser when clicked on.
+    openWebsite(url: string) {
+        let fullUrl: string = `https://www.${url}`;
+        Linking.canOpenURL(fullUrl)
+            .then(supported => {
+                if (!supported) {
+                    Alert.alert('Website is invalid. Please try again.');
+                } else {
+                    return Linking.openURL(fullUrl);
+                }
+            }).catch(err => console.log(err));
+    }
+
     render(){
-        let { emailText, detailContainer,fullNameText, companyNameText,contactAndOtherContainer, 
-            contactAndOther,userNameAddressAndWebsite, phoneContainer, addressContainer } = personViewStyles;
+        let { emailText, detailContainer,fullNameText, companyNameText,contactAndOtherContainer, webLink,websiteText,
+            contactAndOther,userNameAddressAndWebsite, phoneContainer, addressContainer, websiteContainer } = personViewStyles;
 
         if (this.props.fetchingPerson) {
             return (
@@ -120,7 +133,10 @@ class PersonView extends Component<Props, State> {
                             <View style={contactAndOtherContainer}>
                                 <Text style={contactAndOther}>Other Information</Text>
                                 <Text style={userNameAddressAndWebsite}>User Name: {username}</Text>
-                                <Text style={userNameAddressAndWebsite}>Website: {website}</Text>
+                                <View style={websiteContainer}>
+                                    <Text style={websiteText}>Website: </Text>
+                                    <TouchableOpacity onPress={() => this.openWebsite(website)}><Text style={webLink}>{website}</Text></TouchableOpacity>
+                                </View>
                             </View>
                         </View>
                     </ScrollView>
@@ -180,6 +196,19 @@ const personViewStyles = StyleSheet.create({
         fontWeight: 'normal',
         color: '#3f3f3f',
         paddingLeft: 20,
+    },
+    websiteContainer: {
+        backgroundColor: '#f5e1e1',
+        paddingLeft: 20,
+    },
+    websiteText: {
+        fontSize: 17,
+        fontWeight: 'normal',
+    },
+    webLink: {
+        fontSize: 17,
+        fontWeight: 'normal',
+        color: 'blue',
     }
   });
 
